@@ -1,7 +1,6 @@
-import { Component, OnInit, Output } from '@angular/core';
-import { PostService } from './../../services/shared/post.service';
+import { Component, OnInit } from '@angular/core';
 import { PostModel } from './../../services/shared/post-model';
-import { SubredditModel } from './../../services/subreddit/subreddit-response';
+import { PostService } from './../../services/shared/post.service';
 
 @Component({
   selector: 'app-home',
@@ -10,16 +9,13 @@ import { SubredditModel } from './../../services/subreddit/subreddit-response';
 })
 export class HomeComponent implements OnInit {
 
-  // posts$: Array<PostModel>=[];
-  posts:Array<PostModel>= []
-  subreddits:Array<SubredditModel>=[]
+  posts:Array<PostModel>=[]
 
-  constructor(private PostService:PostService) {
-    this.PostService.getallposts().subscribe((data)=>{
-      this.posts=data
-    })
-
-   }
+ constructor(private postService:PostService){
+   this.postService.getallposts().subscribe((data)=>{
+     this.posts=data
+   });
+ }
 
   ngOnInit(): void {
   }

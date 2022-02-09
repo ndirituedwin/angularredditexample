@@ -8,7 +8,7 @@
         </div>
         <div class="col-md-11">
           <span>
-            <span class="subreddit-text"><a class="post-url" routerLink="">{{post.subredditname}}</a></span>
+            <span class="subreddit-text"><a class="post-url" routerLink="">{{post.subreddit}}</a></span>
             <span> . Posted
               <span> {{post.duration}} </span>
               by
@@ -16,13 +16,12 @@
             </span>
           </span>
           <hr />
-          <a routerLink="post.url" class="post-title">{{post.postname}}</a>
+          <a routerLink="post.url" class="post-title">{{post.name}}</a>
           <div>
             <p class="post-text" [innerHtml]="post.description"></p>
           </div>
           <div class="post-comment">
-            <!-- <form class="post-form" [formGroup]="commentForm" (ngSubmit)="postComment()"> -->
-            <form [formGroup]="commentForm" (ngSubmit)="postComment()">
+            <form class="post-form" [formGroup]="commentForm" (ngSubmit)="postComment()">
               <div class="">
                 <textarea class="form-control" [formControlName]="'text'" placeholder="Your Thoughts?"></textarea>
               </div>
@@ -35,7 +34,7 @@
                 <a routerLink="/user/comment.username">{{comment.username}}</a>
               </div>
               <div>
-                <p>{{comment.duration}}</p>
+                <p>{{comment.createdDate}}</p>
               </div>
               <b>{{comment.text}}</b>
             </div>

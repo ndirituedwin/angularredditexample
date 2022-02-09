@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PostService } from './../../../services/shared/post.service';
-import {faComments } from '@fortawesome/free-solid-svg-icons';
 import { PostModel } from './../../../services/shared/post-model';
+import { faArrowUp,faArrowDown,faComments } from '@fortawesome/free-solid-svg-icons';
 import { Router } from '@angular/router';
 
 @Component({
@@ -11,19 +11,17 @@ import { Router } from '@angular/router';
 })
 export class PostTitleComponent implements OnInit {
 
-  faComments=faComments
-  // posts:Array<PostModel>=[]
-  @Input() posts: PostModel[]
-  constructor(private Router:Router ) {}
-  // constructor(private PostService:PostService,private Router:Router ) {
-  //   this.PostService.getallposts().subscribe((post)=>{
-  //          this.posts=post
-  //   });
-  //  }
+faComments=faComments
+@Input() posts:PostModel[]
+
+  constructor(private router:Router) {
+
+  }
+
   ngOnInit(): void {
   }
-  goToPost(id){
-    this.Router.navigateByUrl('/view-post/'+id);
+  goToPost(id:number){
+    this.router.navigateByUrl('/view-post/'+id);
 
   }
 

@@ -1,6 +1,8 @@
 export interface LoginResponse{
   authenticationToken:string;
+  expiresAt:string;
   refreshToken:string;
-  expiresAt:Date;
-  username:string
+  username:string;
+
+
 }

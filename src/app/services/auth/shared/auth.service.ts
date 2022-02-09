@@ -1,98 +1,79 @@
-import { Injectable, Output, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { SignupRequestPayload } from './../../../../../../angular-reddit-clone-master/angular-reddit-clone-master/src/app/auth/signup/singup-request.payload';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import { map, Observable, tap, throwError } from 'rxjs';
+import { SignupRequestPayload } from './../../../components/auth/signup-request.payload';
 import { LoginRequestPayload } from './../../../components/auth/login/login.request.payload';
-import { LoginResponse } from './../../../components/auth/login/login-response.payloads';
+import { LoginResponse } from './../../../components/auth/login/login.response.payload';
 import { LocalStorageService } from 'ngx-webstorage';
-import { HttpheadersService } from './../../HttpHeaders/httpheaders.service';
-import { environment } from './../../../../environments/environment';
+import { environment } from './../../../environment/environment';
 
+const signupurl=`api/auth/signup`;
+const signinurl=`api/auth/login`;
+const tokennurl=`api/auth/refreshToken`;
+const logout=`api/auth/logout`;
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
-  baseUrl=environment.baseUrl
-  @Output() loggedIn: EventEmitter<boolean> = new EventEmitter();
-  @Output() username: EventEmitter<string> = new EventEmitter();
-  refreshTokenPayload = {
-    refreshToken: this.getRefreshToken(),
-    username: this.getUserName()
+ baseUrl=environment.baseUrl
+  @Output() loggedIn:EventEmitter<boolean>=new EventEmitter;
+  @Output() username:EventEmitter<string>=new EventEmitter;
+  refreshTokenPayload={
+    refreshToken:this.getRefreshToken(),
+    username:this.getUsername()
   }
+  constructor(private httpClient:HttpClient,private localstorage:LocalStorageService) { }
 
-  constructor(
-    private http: HttpClient,private localstorage:LocalStorageService,private HttpheadersService:HttpheadersService) {
-
-  }
-
-  signUp(signupRequestPayload: SignupRequestPayload):Observable<any>{
-    // const signupurl=`http://localhost:9090/api/auth/signup`
-    const signupurl=this.baseUrl+`api/auth/signup`
-      return this.http.post(signupurl,signupRequestPayload,{responseType:'text'});
+  signup(SignupRequestPayload:SignupRequestPayload):Observable<any>{
+    return this.httpClient.post(this.baseUrl+signupurl,SignupRequestPayload,{responseType:'text'});
   }
   login(loginrequestpayloead:LoginRequestPayload):Observable<boolean>{
-    // const loginurl=`http://localhost:9090/api/auth/login`
-    const loginurl=this.baseUrl+`api/auth/login`
-    return this.http.post<LoginResponse>(loginurl,loginrequestpayloead).pipe(map(data=>{
+    return this.httpClient.post<LoginResponse>(this.baseUrl+signinurl,loginrequestpayloead).pipe(map(data=>{
       this.localstorage.store("authenticationToken",data.authenticationToken)
       this.localstorage.store("username",data.username)
       this.localstorage.store("refreshToken",data.refreshToken)
       this.localstorage.store("expiresAt",data.expiresAt)
-       this.loggedIn.emit(true)
-       this.username.emit(data.username)
+      this.loggedIn.emit(true);
+      this.username.emit(data.username)
       return true;
     }));
   }
-  getJwttoken(){
-     this.localstorage.retrieve("authenticationToken");
+  logout(){
+    this.httpClient.post(this.baseUrl+logout,this.refreshTokenPayload,{responseType:'text'}).subscribe((data)=>{
+        console.log("logout",data)
+        this.localstorage.clear("authenticationToken")
+        this.localstorage.clear("username")
+        this.localstorage.clear("refreshToken")
+        this.localstorage.clear("expiresAt")
+        return true;
+    },error=>{
+      throwError(error)
+    })
+  }
+
+  getJwtToken() {
+    return this.localstorage.retrieve('authenticationToken');
   }
   refreshToken() {
-    // const refreshtokenurl=`http://localhost:9090/api/auth/refreshtoken`
-    const refreshtokenurl=this.baseUrl+`api/auth/refreshtoken`
-    return this.http.post<LoginResponse>(refreshtokenurl,
-      this.refreshTokenPayload)
-      .pipe(tap(response => {
-        this.localstorage.clear('authenticationToken');
-        this.localstorage.clear('expiresAt');
-        this.localstorage.store('authenticationToken',
-          response.authenticationToken);
-        this.localstorage.store('expiresAt', response.expiresAt);
-      }));
+    const RefreshTokenPayload={
+      refreshToken:this.getRefreshToken(),
+      username:this.getUsername()
+    }
+    return this.httpClient.post<LoginResponse>(this.baseUrl+tokennurl,RefreshTokenPayload)
+    .pipe(tap(response=>{
+      this.localstorage.store('authenticationToken',
+        response.authenticationToken);
+        this.localstorage.store('expiresAt',response.expiresAt)
+    }));
+  }
+  getUsername() {
+    return this.localstorage.retrieve('username');
   }
   getRefreshToken() {
     return this.localstorage.retrieve('refreshToken');
   }
-  getUserName() {
-    return this.localstorage.retrieve('username');
-  }
   isLoggedIn(): boolean {
-    // return this.getJwttoken() !==null;
-    const jwt=this.getJwttoken();
-    if(jwt !==null){
-                return true;
-    }else{
-
-      return false;
-    }
-    // return this.getJwttoken() != null;
-
-
+    return this.getJwtToken() !=null
   }
-  logout(){
-    // const logouturl=`http://localhost:9090/api/auth/logout`
-    const logouturl=this.baseUrl+`api/auth/logout`
 
-    // this.http.post(logouturl,this.refreshTokenPayload,this.HttpheadersService.headers(),{responseType:'text'}).subscribe((data)=>{
-     this.http.post(logouturl,this.refreshTokenPayload,{responseType:'text'}).subscribe((data)=>{
-      console.log(data)
-     },error=>{
-       throwError(error)
-     })
-     this.localstorage.clear('authenticationToken')
-     this.localstorage.clear('refreshToken')
-     this.localstorage.clear('expiresAt')
-     this.localstorage.clear('username')
-
-  }
 }

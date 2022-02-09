@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { SubredditService } from './../../../services/subreddit/subreddit.service';
 import { SubredditModel } from './../../../services/subreddit/subreddit-response';
+import { SubredditService } from './../../../services/subreddit/subreddit.service';
 import { throwError } from 'rxjs';
 
 @Component({
@@ -11,14 +11,16 @@ import { throwError } from 'rxjs';
 export class ListSubredditsComponent implements OnInit {
 
   subreddits:Array<SubredditModel>
-  constructor(private SubredditService:SubredditService) { }
+  constructor(private SubredditService:SubredditService) {
+    this.SubredditService.getallsubreddits().subscribe((data)=>{
+      this.subreddits=data;
+
+    },error=>{
+      throwError(error);
+    })
+   }
 
   ngOnInit(): void {
-    this.SubredditService.getAllSubreddits().subscribe((data)=>{
-      this.subreddits=data;
-    },error=>{
-      throwError(error)
-    })
   }
 
 }

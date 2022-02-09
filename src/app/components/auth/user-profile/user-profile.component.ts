@@ -1,10 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { PostModel } from './../../../services/shared/post-model';
-import { faComments } from '@fortawesome/free-solid-svg-icons';
-import { Router, ActivatedRoute } from '@angular/router';
-import { CommentPayload } from './../../subreddit/view-post/commentPayload';
+import { CommentPayload } from './../../../comments/comment.payload';
+import { ActivatedRoute } from '@angular/router';
+import { CommentService } from './../../../services/comment/comment.service';
 import { PostService } from './../../../services/shared/post.service';
-import { CommentService } from './../../../services/comments/comment.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -13,25 +12,25 @@ import { CommentService } from './../../../services/comments/comment.service';
 })
 export class UserProfileComponent implements OnInit {
 
-   name:string;
-   posts:PostModel[]
-   comments:CommentPayload[]
-   postLength:number
-   commentLength:number
-  constructor(private ActivatedRoute:ActivatedRoute,private PostService:PostService,private CommentService:CommentService) {
-      this.name=this.ActivatedRoute.snapshot.params['name'];
-      this.PostService.getallpostsByUser(this.name).subscribe((data)=>{
-        this.posts=data;
-        this.postLength=data.length;
-      })
-      this.CommentService.getAllCommentsByUser(this.name).subscribe((data)=>{
-        this.comments=data
-        this.commentLength=data.length
-      });
-  }
+  username:string;
+  posts:PostModel[]
+  comments:CommentPayload[];
+  postLength:number;
+  commentLength:number;
+
+  constructor(private activeroute:ActivatedRoute,private PostService: PostService,private CommentService:CommentService) {
+    this.username=this.activeroute.snapshot.params['username'];
+    this.PostService.getallpostsforauser(this.username).subscribe((data)=>{
+      this.posts=data;
+      this.postLength=data.length;
+    })
+    this.CommentService.getallcommentsforauser(this.username).subscribe((data)=>{
+      this.comments=data;
+      this.commentLength=data.length;
+    })
+   }
 
   ngOnInit(): void {
-
   }
 
 }

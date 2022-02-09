@@ -8,16 +8,17 @@ import { Router } from '@angular/router';
 })
 export class SideBarComponent implements OnInit {
 
-  constructor(private Router:Router) { }
+  constructor(private router:Router) { }
 
   ngOnInit(): void {
-  }
 
-  goToCreatePost(){
-       this.Router.navigateByUrl('/create-post')
   }
-  goToCreateSubreddit(){
-    this.Router.navigateByUrl('/create-subreddit')
+  gotoCreateSubreddit(){
+    this.router.navigateByUrl('/create-subreddit')
+
+  }
+  gotoCreatePost(){
+    this.router.navigateByUrl('/create-post')
 
   }
 

@@ -1,4 +1,3 @@
 export enum VoteType{
-  UPVOTE,
-  DOWNVOTE
+  UPVOTE,DOWNVOTE
 }
